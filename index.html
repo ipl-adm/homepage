@@ -1,127 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-
-    <title>Homepage</title>
-    <link rel="stylesheet" href="styles.css" />
-    <link href="favicon.png" rel="shortcut icon" type="image/x-icon" />
-  </head>
-  <body>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <title>Добро пожаловать, снова.</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
     <div id="search">
-      <input
-        id="search-field"
-        type="text"
-        name="search-field"
-        onkeypress="return search(event)"
-      />
+        <input id="search-field" type="text" name="search-field"/>
     </div>
     <div class="container">
-      <div id="clock"></div>
-      <div class="weather-container">
-        <div class="row">
-          <div id="weather-description" class="inline"></div>
-          <div class="inline">-</div>
-          <div id="temp" class="inline"></div>
+        <div id="clock"></div>
+        <div class="text-container">
+            <div class="row">
+                <div id="text-description" class="inline"></div>
+                <div class="inline" id="randtext">  </div>
+                <div id="temp" class="inline"></div>
+            </div>
         </div>
-      </div>
-      <div id="bookmark-container"></div>
+        <div class="bookmark-container">
+            <div class="bookmark-set">
+                <div class="bookmark-title">[soc]</div>
+                <div class="bookmark-inner-container">
+                    <a class="bookmark" href="https://vk.com/devgrf" target="_blank">VK</a>
+                    <a class="bookmark" href="https://t.me/tp3rson" target="_blank">Telegram</a>
+                    <a class="bookmark" href="https://discord.gg/pjZAfPx" target="_blank">Discord</a>
+                </div>
+            </div>
+            <div class="bookmark-set">
+                <div class="bookmark-title">[work]</div>
+                <div class="bookmark-inner-container">
+                    <a class="bookmark" href="https://github.com/" target="_blank">Github</a>
+                    <a class="bookmark" href="https://gitlab.com/" target="_blank">Gitlab</a>
+                </div>
+            </div>
+            <div class="bookmark-set">
+            <div class="bookmark-title">[tools]</div>
+                <div class="bookmark-inner-container">
+                    <a class="bookmark" href="https://www.jetbrains.com/ru-ru/youtrack/" target="_blank">Youtrack</a>
+                    <a class="bookmark" href="https://www.jetbrains.com/ru-ru/teamcity/" target="_blank">/r/Teamcity</a>
+                    <a class="bookmark" href="https://www.jetbrains.com/ru-ru/idea/" target="_blank">Intellij IDEA</a>
+                    <a class="bookmark" href="" target="_blank">Win10/Linux</a>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script src="bookmarks.js"></script>
     <script>
-      const searchUrl = "https://google.com/search?q=";
-      // Search on enter key event
-      function search(e) {
-        if (e.keyCode == 13) {
-          var val = document.getElementById("search-field").value;
-          window.open(searchUrl + val);
-        }
-      }
-      // Get current time and format
-      function getTime() {
-        let date = new Date(),
-          min = date.getMinutes(),
-          sec = date.getSeconds(),
-          hour = date.getHours();
+        var textarr = ["'Разработка это весело!' - говорили они...", "Майнкрафт - это моя жизнь!!1", "Семь раз подумай, один раз напиши"];
+        var rand = Math.floor(Math.random() * textarr.length);
+        var randtext = textarr[rand]
+        document.querySelector("#randtext").innerHTML = randtext;
 
-        return (
-          "" +
-          (hour < 10 ? "0" + hour : hour) +
-          ":" +
-          (min < 10 ? "0" + min : min) +
-          ":" +
-          (sec < 10 ? "0" + sec : sec)
-        );
-      }
-      // Handle Weather request
-      function getWeather() {
-        let xhr = new XMLHttpRequest();
-        // Request to open weather map
-        xhr.open(
-          "GET",
-          "http://api.openweathermap.org/data/2.5/weather?id=4737316&units=imperial&appid=e5b292ae2f9dae5f29e11499c2d82ece"
-        );
-        xhr.onload = () => {
-          if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-              let json = JSON.parse(xhr.responseText);
-              document.getElementById("temp").innerHTML =
-                json.main.temp.toFixed(0) + " F";
-              document.getElementById("weather-description").innerHTML =
-                json.weather[0].description;
-            } else {
-              console.log("error msg: " + xhr.status);
+        // Search on enter key event
+        document.getElementById("search-field").addEventListener("keydown",  event => { 
+            if (event.keyCode === 13) {
+                var val = document.getElementById("search-field").value;
+                window.open("https://google.com/search?q=" + val);
             }
-          }
-        };
-        xhr.send();
-      }
-      // Handle writing out Bookmarks
-      function setupBookmarks() {
-        const bookmarkContainer = document.getElementById("bookmark-container");
-        bookmarkContainer.innerHTML = bookmarks
-          .map((b) => {
-            const html = ["<div class='bookmark-set'>"];
-            html.push(`<div class="bookmark-title">${b.title}</div>`);
-            html.push('<div class="bookmark-inner-container">');
-            html.push(
-              ...b.links.map(
-                (l) =>
-                  `<a class="bookmark" href="${l.url}" target="_blank">${l.name}</a>`
-              )
-            );
-            html.push("</div></div>");
-            return html.join("");
-          })
-          .join("");
-      }
+        });
+        // Get current time and format
+        getTime = () => {
+            let date = new Date(),
+                min = date.getMinutes(),
+                sec = date.getSeconds(),
+                hour = date.getHours();
 
-      window.onload = () => {
-        setupBookmarks();
-        getWeather();
-        // Set up the clock
-        document.getElementById("clock").innerHTML = getTime();
-        // Set clock interval to tick clock
-        setInterval(() => {
-          document.getElementById("clock").innerHTML = getTime();
-        }, 100);
-      };
-
-      document.addEventListener("keyup", (event) => {
-        if (event.keyCode == 32) {
-          // Spacebar code to open search
-          document.getElementById("search").style.display = "flex";
-          document.getElementById("search-field").focus();
-        } else if (event.keyCode == 27) {
-          // Esc to close search
-          document.getElementById("search-field").value = "";
-          document.getElementById("search-field").blur();
-          document.getElementById("search").style.display = "none";
+            return "" + 
+                (hour < 10 ? ("0" + hour) : hour) + ":" + 
+                (min < 10 ? ("0" + min) : min) + ":" + 
+                (sec < 10 ? ("0" + sec) : sec);
         }
-      });
+
+        window.onload = () => {
+            // Set up the clock
+            document.getElementById("clock").innerHTML = getTime();
+            // Set clock interval to tick clock
+            setInterval( () => {
+                document.getElementById("clock").innerHTML = getTime();
+            },100);
+        }
+
+        document.addEventListener("keydown", event => {
+            if (event.keyCode == 32) {          // Пробел откроет полноэкранный поиск
+                document.getElementById('search').style.display = 'flex';
+                document.getElementById('search-field').focus();
+            } else if (event.keyCode == 27) {   // А esc закроет его!
+                document.getElementById('search-field').value = '';
+                document.getElementById('search-field').blur();
+                document.getElementById('search').style.display = 'none';
+            }
+        });
     </script>
-  </body>
+</body>
 </html>
